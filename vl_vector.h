@@ -25,7 +25,7 @@ class vl_vector {
 
   void push_back (const T &v);
   void pop_back ();
-
+  T* insert(T* pos,const T &v);
 
   /*Iterator Support*/
   typedef T* iterator;
@@ -55,7 +55,7 @@ class vl_vector {
   bool operator== (vl_vector<T, StaticCapacity> &rhs);
   bool operator!= (vl_vector<T, StaticCapacity> &rhs);
   void print();
-  iterator insert(iterator pos,const T &v);
+
  private:
   T _static_vector[StaticCapacity]; /*static_container located in stack*/
   T *_dynamic_vector; /*dynamic container allocated on the heap*/
@@ -296,6 +296,20 @@ void vl_vector<T, StaticCapacity>::print ()
     }
     std::cout<<"]"<<std::endl;
   std::cout<<"Size: "<<_size<<" Capacity: "<<_capacity<<std::endl;
+}
+template<class T, size_t StaticCapacity>
+T *vl_vector<T, StaticCapacity>::insert (T *pos, const T &v)
+{
+  iterator last = end();
+  if (_capacity != CapC (_size, 1))
+    {
+      extend_vector ();
+    }
+    std::move (pos,last,pos + 1);
+  _size++;
+  *pos = v;
+
+  return pos;
 }
 
 #endif //_VL_VECTOR_H_
