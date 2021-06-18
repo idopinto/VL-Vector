@@ -58,7 +58,8 @@ class vl_vector {
   T operator[] (size_t index) const;
   bool operator== (const vl_vector<T, StaticCapacity> &rhs) const;
   bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const;
-  void print();
+
+//  void print();
 
  private:
   T _static_vector[StaticCapacity]; /*static_container located in stack*/
@@ -319,7 +320,7 @@ T* vl_vector<T, StaticCapacity>::insert (vl_vector:: const_iterator pos, const T
   T* ptr =(iterator)pos;
   int  distance =std::distance (begin(),ptr);
   if (_capacity != cap_c (_size, 1))
-    {extend_vector (1);}K
+    {extend_vector (1);}
   _size++;
   ptr = begin()+distance;
   std::copy_backward (ptr,end(),end()+1);
