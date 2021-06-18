@@ -1,6 +1,9 @@
 
 #ifndef _VL_VECTOR_H_
 #define _VL_VECTOR_H_
+#include <iostream>
+#include <stdexcept>
+#include <cstring>
 #include <exception>
 #include <cmath>
 template<class T, size_t StaticCapacity = 16>
