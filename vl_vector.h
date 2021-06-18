@@ -28,7 +28,6 @@ class vl_vector {
   T *data ();
   const T *data () const;
   bool contains (const T &v) const;
-
   void push_back (const T &v);
   void pop_back ();
   T* insert(const_iterator pos,const T &v);
