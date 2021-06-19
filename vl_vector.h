@@ -253,7 +253,7 @@ class vl_vector {
  private:
   T _static_vector[StaticCapacity]; /*static_container located in stack*/
   T *_dynamic_vector; /*dynamic container allocated on the heap*/
-  bool _mode;
+  Mode _mode;
   size_t _size{}; /* # of T elements the vector*/
   size_t _capacity; /* current maximum # of T elements that can be stored in vector*/
   size_t cap_c (size_t size, size_t k); /* Capacity function*/
