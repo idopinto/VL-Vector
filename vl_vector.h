@@ -9,7 +9,7 @@
 
 #define STATIC_CAP 16
 #define OUT_OF_RNG "Error: out of range"
-enum Mode { Stack = 0, Heap = 1 };
+enum Mode { Stack , Heap };
 template<class T, size_t StaticCapacity = STATIC_CAP>
 class vl_vector {
  public:
