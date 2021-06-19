@@ -153,11 +153,11 @@ class vl_vector {
   iterator insert (const_iterator pos, const T &v)
   {
     size_t distance = std::distance (cbegin (), pos);
-    if (_capacity != cap_c (_size, 1))
-      { extend_vector (1); }
-    _size++;
+    if(_size + 1 >_capacity)
+      { extend_vector (1);}
     std::copy_backward (begin () + distance, end (), end () + 1);
     data ()[distance] = v;
+    _size++;
     return begin() + distance;
   }
   template<class ForwardIterator>
