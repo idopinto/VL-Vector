@@ -163,9 +163,11 @@ class vl_vector {
   template<class ForwardIterator>
   iterator insert (const_iterator pos, ForwardIterator first, ForwardIterator last)
   {
-    size_t k = std::distance (first, last); /*# of elements to insert*/
-    size_t distance = std::distance (cbegin (), pos); /*Distance between the beginning of the vector to the given position*/
-    if(_size+k > _capacity)
+    size_t k = std::distance (first, last);
+    /*# of elements to insert*/
+    size_t distance = std::distance (cbegin (), pos);
+    /*Distance between the beginning of the vector to the given position*/
+    if(_size + k > _capacity)
       { extend_vector (k);}
     std::move_backward (begin () + distance, end (), end () + k);
     size_t i = distance;
