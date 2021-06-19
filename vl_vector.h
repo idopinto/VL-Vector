@@ -9,7 +9,7 @@
 
 #define STATIC_CAP 16
 #define OUT_OF_RNG "Error: out of range"
-enum Mode { Stack , Heap };
+enum Mode { STACK , HEAP};
 template<class T, size_t StaticCapacity = STATIC_CAP>
 class vl_vector {
  public:
@@ -47,7 +47,7 @@ class vl_vector {
 
   /* ---Life-Span operations---*/
   /*Default Constructor*/
-  vl_vector (): _size (0), _capacity (StaticCapacity), _dynamic_vector (nullptr),_mode(Stack)
+  vl_vector (): _size (0), _capacity (StaticCapacity), _dynamic_vector (nullptr),_mode(STACK)
   {}
   /*Copy Constructor*/
   vl_vector (const vl_vector<T, StaticCapacity> &other) : vl_vector ()
@@ -57,7 +57,7 @@ class vl_vector {
     if (this->_size > StaticCapacity)
       {
         _dynamic_vector = new T[_capacity];
-        _mode = Heap;
+        _mode = HEAP;
       }
     for (size_t i = 0; i < _size; ++i)
       {
@@ -75,7 +75,7 @@ class vl_vector {
     if (_capacity != StaticCapacity)
       {
         _dynamic_vector = new T[_capacity];
-        _mode = Heap;
+        _mode = HEAP;
       }
     size_t i = 0;
     for (auto it = first; it != last; ++it)
@@ -92,7 +92,7 @@ class vl_vector {
     if (_capacity != StaticCapacity)
       {
         _dynamic_vector = new T[_capacity];
-        _mode =Heap;
+        _mode =HEAP;
       }
     for (size_t i = 0; i < count; ++i)
       {
@@ -102,7 +102,7 @@ class vl_vector {
 
   ~vl_vector ()
   {
-    if(_mode == Heap)
+    if(_mode == HEAP)
       {delete[] _dynamic_vector;}
   }
   /*---------------------------*/
@@ -126,9 +126,9 @@ class vl_vector {
     return data ()[index];
   }
   T *data ()
-  {return (_mode == Stack) ?  _static_vector : _dynamic_vector;}
+  {return (_mode == STACK) ? _static_vector : _dynamic_vector;}
   const T *data () const
-  {return (_mode == Stack) ?  _static_vector : _dynamic_vector;}
+  {return (_mode == STACK) ? _static_vector : _dynamic_vector;}
   bool contains (const T &v) const
   {return (std::find (begin(),end(),v) != end());}
   void push_back (const T &v)
@@ -212,7 +212,7 @@ class vl_vector {
     if (this != &other)
       {
         // de-allocates old allocations
-        if (_mode == Heap)
+        if (_mode == HEAP)
           {
             delete[] _dynamic_vector;
             _dynamic_vector = nullptr;
@@ -220,11 +220,11 @@ class vl_vector {
 
         _size = other.size ();
         _capacity = other.capacity ();
-        _mode = Stack;
+        _mode = STACK;
         if (_size > StaticCapacity)
           {
             _dynamic_vector = new T[_capacity];
-            _mode = Heap;
+            _mode = HEAP;
           }
         for (size_t i = 0; i < _size; ++i)
           {data ()[i] = other.data ()[i];}
@@ -277,7 +277,7 @@ void vl_vector<T, StaticCapacity>::extend_vector (size_t k)
   std::copy (begin(),end(),new_dynamic_vector);
   delete[] _dynamic_vector;
   _dynamic_vector = new_dynamic_vector;
-  _mode = Heap;
+  _mode = HEAP;
 }
 
 template<class T, size_t StaticCapacity>
@@ -288,7 +288,7 @@ void vl_vector<T, StaticCapacity>::switch_to_static_vector (size_t k)
     {_static_vector[i] = _dynamic_vector[i];}
   delete[] _dynamic_vector;
   _dynamic_vector = nullptr;
-  _mode = Stack;
+  _mode = STACK;
 }
 
 template<class T, size_t StaticCapacity>
