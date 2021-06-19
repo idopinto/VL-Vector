@@ -165,22 +165,15 @@ class vl_vector {
   {
     size_t k = std::distance (first, last); /*# of elements to insert*/
     size_t distance = std::distance (cbegin (), pos); /*Distance between the beginning of the vector to the given position*/
-    if (_capacity != cap_c (_size, k))
-      {
-        extend_vector (k);
-        _size += k;
-        std::move_backward (begin () + distance, end (), end () + k);
-      }
-    else
-      {
-        std::move_backward (begin () + distance, end (), end () + k);
-        _size += k;
-      }
+    if(_size+k > _capacity)
+      { extend_vector (k);}
+    std::move_backward (begin () + distance, end (), end () + k);
     size_t i = distance;
     for (auto it = first; it != last; ++it)
       {
         data ()[i++] = *it;
       }
+      _size+=k;
     return begin() + distance;
   }
   iterator erase (const_iterator pos)
