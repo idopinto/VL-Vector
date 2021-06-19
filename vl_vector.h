@@ -33,9 +33,9 @@ class vl_vector {
   bool contains (const T &v) const;
   void push_back (const T &v);
   void pop_back ();
-  T* insert(const_iterator pos,const T &v);
+   T* insert(const_iterator pos,const T &v);
   template<class InputIterator>
-  T* insert(const_iterator pos, InputIterator first, InputIterator last);
+  const T* insert(const_iterator pos, InputIterator first, InputIterator last);
   T* erase(const_iterator pos);
   T* erase(const_iterator first, const_iterator last);
   void clear();
@@ -62,7 +62,7 @@ class vl_vector {
   bool operator== (const vl_vector<T, StaticCapacity> &rhs) const;
   bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const;
 
-//  void print();
+  void print() ;
 
  private:
   T _static_vector[StaticCapacity]; /*static_container located in stack*/
@@ -87,6 +87,7 @@ vl_vector<T, StaticCapacity>::vl_vector (const vl_vector<T, StaticCapacity> &oth
     : vl_vector ()
 {
   _capacity = other._capacity;
+  _size = other._size;
   if (this->_size > StaticCapacity)
     {
       _dynamic_vector = new T[_capacity];
@@ -95,7 +96,7 @@ vl_vector<T, StaticCapacity>::vl_vector (const vl_vector<T, StaticCapacity> &oth
     {
       data ()[i] = other.data()[i];
     }
-    _size = other._size;
+
 }
 /*Sequence based Constructor*/
 template<class T, size_t StaticCapacity>
@@ -103,7 +104,18 @@ template<class InputIterator>
 vl_vector<T, StaticCapacity>::vl_vector (InputIterator first, InputIterator last)
     : vl_vector ()
 {
-  insert (first,last,data());
+  size_t distance = std::distance (first,last);
+  _capacity = cap_c (_size,distance);
+  _size += distance;
+  if(_capacity!= StaticCapacity)
+    {
+      _dynamic_vector = new T[_capacity];
+    }
+  size_t i = 0;
+  for (auto it = first; it != last; ++it)
+    {
+      data()[i++] = *it;
+    }
 
 }
 /*Single-Value initialized Constructor*/
@@ -195,6 +207,7 @@ size_t vl_vector<T, StaticCapacity>::cap_c (size_t size, size_t k)
 template<class T, size_t StaticCapacity>
 void vl_vector<T, StaticCapacity>::extend_vector (size_t k)
 {
+//  int* temp=data();
   if(_size +k > _capacity)
     {
       _capacity = cap_c (_size, k);
@@ -296,26 +309,26 @@ vl_vector<T, StaticCapacity>::operator= (const vl_vector<T, StaticCapacity> &oth
     }
   return *this;
 }
-//template<class T, size_t StaticCapacity>
-//void vl_vector<T, StaticCapacity>::print ()
-//{
-//  iterator it = this->begin();
-//  if(_size > StaticCapacity)
-//    {
-//      std::cout<< "Dynamic Vector [";
-//    }
-//  else
-//    {
-//      std::cout<<"Static Vector [";
-//    }
-//  while(it!= end())
-//    {
-//      std::cout<< *it <<" ";
-//      it++;
-//    }
-//    std::cout<<"]"<<std::endl;
-//  std::cout<<"Size: "<<_size<<" Capacity: "<<_capacity<<std::endl;
-//}
+template<class T, size_t StaticCapacity>
+void vl_vector<T, StaticCapacity>::print ()
+{
+  iterator it = this->begin();
+  if(_size > StaticCapacity)
+    {
+      std::cout<< "Dynamic Vector [";
+    }
+  else
+    {
+      std::cout<<"Static Vector [";
+    }
+  while(it!= end())
+    {
+      std::cout<< *it <<" ";
+      it++;
+    }
+    std::cout<<"]"<<std::endl;
+  std::cout<<"Size: "<<_size<<" Capacity: "<<_capacity<<std::endl;
+}
 
 template<class T, size_t StaticCapacity>
 T* vl_vector<T, StaticCapacity>::insert (vl_vector:: const_iterator pos, const T &v)
@@ -332,8 +345,9 @@ T* vl_vector<T, StaticCapacity>::insert (vl_vector:: const_iterator pos, const T
 }
 template<class T, size_t StaticCapacity>
 template<class InputIterator>
-T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,InputIterator first, InputIterator last)
+const T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,InputIterator first, InputIterator last)
 {
+//  int* temp=data();
   T* ptr =(iterator)pos;
   int  k =std::distance (first,last);
   int distance = std::distance (begin(),ptr);
@@ -349,9 +363,10 @@ T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,InputIt
       std::copy_backward (ptr,end(),end()+k);
       _size +=k;
     }
+  size_t i = distance;
   for (auto it = first; it != last; ++it)
     {
-      data()[distance++] = *it;
+      data()[i++] = *it;
     }
     return data()+distance;
 
