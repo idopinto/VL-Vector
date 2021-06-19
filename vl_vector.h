@@ -169,11 +169,11 @@ class vl_vector {
       {
         extend_vector (k);
         _size += k;
-        std::copy_backward (begin () + distance, end (), end () + k);
+        std::move_backward (begin () + distance, end (), end () + k);
       }
     else
       {
-        std::copy_backward (begin () + distance, end (), end () + k);
+        std::move_backward (begin () + distance, end (), end () + k);
         _size += k;
       }
     size_t i = distance;
