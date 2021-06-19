@@ -47,8 +47,13 @@ class vl_vector {
 
   /* ---Life-Span operations---*/
   /*Default Constructor*/
-  vl_vector (): _size (0), _capacity (StaticCapacity), _dynamic_vector (nullptr),_mode(STACK)
-  {}
+  vl_vector ()
+  {
+    _size = 0;
+    _capacity = StaticCapacity;
+    _dynamic_vector = nullptr;
+    _mode = STACK;
+  }
   /*Copy Constructor*/
   vl_vector (const vl_vector<T, StaticCapacity> &other) : vl_vector ()
   {
