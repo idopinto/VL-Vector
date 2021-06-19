@@ -3,20 +3,36 @@
 #define _VL_VECTOR_H_
 #include <iostream>
 #include <stdexcept>
-#include <cstring>
 #include <exception>
 #include <cmath>
-template<class T, size_t StaticCapacity = 16>
+#define STATIC_CAP 16
+template<class T, size_t StaticCapacity = STATIC_CAP>
 class vl_vector {
  public:
-  typedef T* iterator;
-  typedef const T* const_iterator;
-  typedef  std::reverse_iterator<iterator> reverse_iterator;
-  typedef  std::reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef T *iterator;
+  typedef const T *const_iterator;
+  typedef std::reverse_iterator<iterator> reverse_iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
   /* ---Life-Span operations---*/
-  vl_vector ();
-  vl_vector (const vl_vector<T, StaticCapacity> &other);
+  /*Default Constructor*/
+  vl_vector () : _size(0),_capacity(StaticCapacity),_dynamic_vector(nullptr)
+  {}
+  /*Copy Constructor*/
+  vl_vector (const vl_vector<T, StaticCapacity> &other) :vl_vector()
+  {
+    _capacity = other._capacity;
+    _size = other._size;
+    if (this->_size > StaticCapacity)
+      {
+        _dynamic_vector = new T[_capacity];
+      }
+    for (size_t i = 0; i < _size; ++i)
+      {
+        data ()[i] = other.data()[i];
+      }
+
+  }
   template<class InputIterator>
   vl_vector (InputIterator first, InputIterator last);
   vl_vector ( size_t count,const T &v);
@@ -33,11 +49,11 @@ class vl_vector {
   bool contains (const T &v) const;
   void push_back (const T &v);
   void pop_back ();
-   T* insert(const_iterator pos,const T &v);
-  template<class InputIterator>
-  const T* insert(const_iterator pos, InputIterator first, InputIterator last);
-  T* erase(const_iterator pos);
-  T* erase(const_iterator first, const_iterator last);
+  iterator insert(const_iterator pos,const T &v);
+  template<class ForwardIterator>
+  iterator insert(const_iterator pos, ForwardIterator first, ForwardIterator last);
+  iterator erase(const_iterator pos);
+  iterator erase(const_iterator first, const_iterator last);
   void clear();
 
   /*Iterator Support*/
@@ -73,29 +89,20 @@ class vl_vector {
   void extend_vector (size_t k);
   void switch_to_static_vector (size_t k);
 };
-/*Default Constructor*/
-template<class T, size_t StaticCapacity>
-vl_vector<T, StaticCapacity>::vl_vector () // initialize list
-{
-  _size = 0;
-  _capacity = StaticCapacity;
-  _dynamic_vector = nullptr;
-}
-/*Copy Constructor*/
+
+//template<class T, size_t StaticCapacity>
+//vl_vector<T, StaticCapacity>::vl_vector () // initialize list
+//{
+//  _size = 0;
+//  _capacity = StaticCapacity;
+//  _dynamic_vector = nullptr;
+//}
+
 template<class T, size_t StaticCapacity>
 vl_vector<T, StaticCapacity>::vl_vector (const vl_vector<T, StaticCapacity> &other)
     : vl_vector ()
 {
-  _capacity = other._capacity;
-  _size = other._size;
-  if (this->_size > StaticCapacity)
-    {
-      _dynamic_vector = new T[_capacity];
-    }
-  for (size_t i = 0; i < _size; ++i)
-    {
-      data ()[i] = other.data()[i];
-    }
+
 
 }
 /*Sequence based Constructor*/
@@ -207,7 +214,6 @@ size_t vl_vector<T, StaticCapacity>::cap_c (size_t size, size_t k)
 template<class T, size_t StaticCapacity>
 void vl_vector<T, StaticCapacity>::extend_vector (size_t k)
 {
-//  int* temp=data();
   if(_size +k > _capacity)
     {
       _capacity = cap_c (_size, k);
@@ -333,34 +339,30 @@ void vl_vector<T, StaticCapacity>::print ()
 template<class T, size_t StaticCapacity>
 T* vl_vector<T, StaticCapacity>::insert (vl_vector:: const_iterator pos, const T &v)
 {
-  T* ptr =(iterator)pos;
-  int  distance =std::distance (begin(),ptr);
+  size_t  distance =std::distance (cbegin(),pos);
   if (_capacity != cap_c (_size, 1))
     {extend_vector (1);}
   _size++;
-  ptr = begin()+distance;
-  std::copy_backward (ptr,end(),end()+1);
+  std::copy_backward ( begin()+distance,end(),end()+1);
   data()[distance] = v;
   return data()+distance;
 }
 template<class T, size_t StaticCapacity>
-template<class InputIterator>
-const T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,InputIterator first, InputIterator last)
+template<class ForwardIterator>
+T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,ForwardIterator first, ForwardIterator last)
 {
-//  int* temp=data();
-  T* ptr =(iterator)pos;
-  int  k =std::distance (first,last);
-  int distance = std::distance (begin(),ptr);
+
+  size_t  k =std::distance (first,last);
+  size_t distance = std::distance (cbegin(),pos);
   if (_capacity != cap_c (_size, k))
     {
       extend_vector (k);
       _size +=k;
-      ptr = begin()+distance;
-      std::copy_backward (ptr,end(),end()+k);
+      std::copy_backward (begin()+distance,end(),end()+k);
     }
   else
     {
-      std::copy_backward (ptr,end(),end()+k);
+      std::copy_backward (begin()+distance,end(),end()+k);
       _size +=k;
     }
   size_t i = distance;
@@ -374,25 +376,26 @@ const T * vl_vector<T, StaticCapacity>::insert ( vl_vector::const_iterator pos,I
 template<class T, size_t StaticCapacity>
 T *vl_vector<T, StaticCapacity>::erase (vl_vector::const_iterator pos)
 {
-  int distance = std::distance (begin(),(iterator)pos);
-  if(_size == 0){return data()+distance;}
+  size_t distance = std::distance (cbegin(),pos);
+  if(_size == 0){return begin()+distance;}
   std::copy((iterator)pos+1,end(),(iterator)pos);
   pop_back();
-  return data()+distance;
+  return begin()+distance;
+//  return data()+distance;
 }
 
 template<class T, size_t StaticCapacity>
-T *
-vl_vector<T, StaticCapacity>::erase (vl_vector::const_iterator first, vl_vector::const_iterator last)
+T * vl_vector<T, StaticCapacity>::erase (vl_vector::const_iterator first, vl_vector::const_iterator last)
 {
-  if(_size == 0){return data();}
-  int k = std::distance ((iterator)first,(iterator)last);
-  int dis = std::distance ((iterator)begin(),(iterator)first);
+  if(_size == 0){return begin();}
+  size_t dis = std::distance (cbegin(),first);
+  size_t k = std::distance (first,last);
+//  std::copy(last,cend(),first);
   std::copy((iterator)last,end(),(iterator)first);
   if (_size > StaticCapacity and _size - k <= StaticCapacity)
     { switch_to_static_vector (k); }
   _size-=k;
-  return data()+dis;
+  return begin()+dis;
 }
 
 template<class T, size_t StaticCapacity>
