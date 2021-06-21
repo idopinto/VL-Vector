@@ -336,11 +336,12 @@ class vl_vector {
   void print() ;
  private:
   /**----private attributes-----**/
-  T _static_vector[StaticCapacity];     /**static_container located in stack**/
-  T *_dynamic_vector;                   /**dynamic container allocated on the heap**/
-  Mode _mode =STACK;                    /** enum indicator **/
-  size_t _size;                       /** # of T elements the vector8*/
-  size_t _capacity;                   /** current maximum # of T elements that can be stored in vector**/
+  T _static_vector[StaticCapacity];/**static_container located in stack**/
+  T *_dynamic_vector;              /**dynamic container allocated on the heap**/
+  Mode _mode =STACK;               /** enum indicator **/
+  size_t _size;                    /** # of T elements the vector8*/
+  size_t _capacity;                /** current maximum # of T elements
+                                    *that can be stored in vector**/
 
   /**---------helper functions-----------**/
   size_t cap_c (size_t size, size_t k); /**Capacity function**/
