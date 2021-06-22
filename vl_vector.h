@@ -333,6 +333,7 @@ class vl_vector {
    */
   bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const
   { return !(rhs == *this); }
+
   void print() ;
  private:
   /**----private attributes-----**/
