@@ -38,7 +38,7 @@ class vl_vector {
   const_iterator cend () const
   { return (const_iterator) data () + _size; }
   /**Reverse-Iterator Support**/
-  reverse_iterator rbegin ()
+  virtual reverse_iterator rbegin ()
   { return (reverse_iterator) end (); }
   const_reverse_iterator rbegin () const
   { return (const_reverse_iterator) end (); }
@@ -56,7 +56,7 @@ class vl_vector {
 /**
  * Default Constructor
  */
-  vl_vector ():_dynamic_vector(nullptr),_size(0),_capacity(StaticCapacity)
+  vl_vector ():_dynamic_vector(nullptr)
   {}
 
   /**
@@ -64,7 +64,7 @@ class vl_vector {
    * @param other
    */
   vl_vector (const vl_vector<T, StaticCapacity> &other) :
-  _dynamic_vector(nullptr),_size(other._size),_capacity(other._capacity)
+  _size(other._size),_capacity(other._capacity)
   {
     build_dynamic_vec_if_needed();
     for (size_t i = 0; i < _size; ++i)
@@ -87,7 +87,7 @@ class vl_vector {
    * @param v
    */
   vl_vector (size_t count, const T &v) :
-    _dynamic_vector(nullptr),_size(count),_capacity(cap_c(0,count))
+  _size(count),_capacity(cap_c(0,count))
   {
     build_dynamic_vec_if_needed();
     std::fill(begin(),end(),v);
@@ -96,7 +96,7 @@ class vl_vector {
   /**
    * Destructor
    */
-  ~vl_vector ()
+  virtual ~vl_vector ()
   {
     if(_mode == HEAP)
       {delete[] _dynamic_vector;}
@@ -106,7 +106,7 @@ class vl_vector {
    *
    * @return current size of vl_vector
    */
-  size_t size () const
+ virtual size_t size () const
   { return _size; }
   /**
    *
@@ -119,8 +119,8 @@ class vl_vector {
    *
    * @return true if vl_vector is empty. false otherwise.
    */
-  bool empty () const
-  { return _size == 0; }
+  virtual bool empty () const
+  { return size() == 0; }
   /**
    *
    * @param index
@@ -169,7 +169,7 @@ class vl_vector {
    * push_back adds v to the end of vl_vector
    * @param v - T element
    */
-  void push_back (const T &v)
+  virtual void push_back (const T &v)
   {
     if (_capacity != cap_c (_size, 1))
       { extend_vector (1); }
@@ -178,7 +178,7 @@ class vl_vector {
   /**
    * pop_back removes the last element in vl_vector
    */
-  void pop_back ()
+  virtual void pop_back ()
   {
     if (empty())
       { return; }
@@ -193,7 +193,7 @@ class vl_vector {
    * @return iterator which points the to new element v
    * (if const_iterator given, returns const_iterator)
    */
-  iterator insert (const_iterator pos, const T &v)
+  virtual iterator insert (const_iterator pos, const T &v)
   {return insert(pos,(const_iterator)&v,(const_iterator)&v+1);}
 
   /**
@@ -243,7 +243,7 @@ class vl_vector {
   /**
    * erase 2-  removes sequence [first,last) from vl_vector
    * @param first -const_iterator (supports non-const iterator)
-   * @param last -onst_iterator (supports non-const iterator)
+   * @param last - const_iterator (supports non-const iterator)
    * @return iterator to the element which is after the removed element
    * (if const_iterator given, returns const_iterator)
    */
@@ -263,8 +263,8 @@ class vl_vector {
   /**
    * clear removes all the elements in vl_vector.
    */
-  void clear ()
-  { erase (data(), data() + _size); }
+  virtual void clear ()
+  { erase (data(), data() + size()); }
 
 
   /**------------------Operators--------------------**/
@@ -284,8 +284,8 @@ class vl_vector {
             delete[] _dynamic_vector;
             _dynamic_vector = nullptr;
           }
-
-        _size = other.size ();
+        _size = other._size;
+//        _size = other.size();
         _capacity = other.capacity ();
         _mode = STACK;
         build_dynamic_vec_if_needed();
@@ -300,7 +300,7 @@ class vl_vector {
    * @return value associated with vl_vector (based on mode)
    * no exception thrown if out_of_range
    */
-  T &operator[] (size_t index) noexcept
+  virtual T &operator[] (size_t index) noexcept
   { return data ()[index]; }
     /**
    * const version -Element access by brackets.
@@ -308,16 +308,17 @@ class vl_vector {
    * @return value associated with vl_vector (based on mode)
    * no exception thrown if out_of_range
    */
-  T operator[] (size_t index) const noexcept
+
+  virtual T operator[] (size_t index) const noexcept
   { return data ()[index]; }
   /**
    *  ==  operator. const
    * @param rhs
    * @return true if equal. false otherwise.
    */
-  bool operator== (const vl_vector<T, StaticCapacity> &rhs) const
+  virtual bool operator== (const vl_vector<T, StaticCapacity> &rhs) const
   {
-    if (_size != rhs.size ())
+    if (_size != rhs._size)
       { return false; }
     for (size_t i = 0; i < _size; i++)
       {
@@ -331,17 +332,17 @@ class vl_vector {
    * @param rhs
    * @return
    */
-  bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const
+  virtual bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const
   { return !(rhs == *this); }
 
   void print() ;
- private:
+ protected:
   /**----private attributes-----**/
   T _static_vector[StaticCapacity];/**static_container located in stack**/
-  T *_dynamic_vector;              /**dynamic container allocated on the heap**/
+  T *_dynamic_vector = nullptr;    /**dynamic container allocated on the heap**/
   Mode _mode =STACK;               /** enum indicator **/
-  size_t _size;                    /** # of T elements the vector8*/
-  size_t _capacity;                /** current maximum # of T elements
+  size_t _size = 0;                    /** # of T elements the vector8*/
+  size_t _capacity = StaticCapacity;   /** current maximum # of T elements
                                     *that can be stored in vector**/
 
   /**---------helper functions-----------**/
@@ -369,7 +370,7 @@ void vl_vector<T, StaticCapacity>::build_dynamic_vec_if_needed()
 }
 
 /**
- * this function retruns updated capacity based on size+k
+ * this function returns updated capacity based on size+k
  * @tparam T
  * @tparam StaticCapacity
  * @param size
