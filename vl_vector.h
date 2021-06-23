@@ -197,16 +197,19 @@ class vl_vector {
   {return insert(pos,(const_iterator)&v,(const_iterator)&v+1);}
 
   /**
-   * insert 2 - inserts sequence [first,last) before position iterator in vl_vector
+   * insert 2 - inserts sequence [first,last) before position iterator
+   * in vl_vector
    * @tparam ForwardIterator
    * @param pos  - const_iterator(supports also non-const iterator)
    * @param first
    * @param last
    * @return iterator of vl_vector that points to
-   * the first element in the sequence . (if const_iterator given, returns const_iterator)
+   * the first element in the sequence . (if const_iterator given,
+   * returns const_iterator)
    */
   template<class ForwardIterator>
-  iterator insert (const_iterator pos, ForwardIterator first, ForwardIterator last)
+  iterator insert (const_iterator pos, ForwardIterator first,
+                   ForwardIterator last)
   {
     size_t k = std::distance (first, last);
     /*# of elements to insert*/
@@ -339,7 +342,7 @@ class vl_vector {
  protected:
   /**----private attributes-----**/
   T _static_vector[StaticCapacity];/**static_container located in stack**/
-  T *_dynamic_vector = nullptr;    /**dynamic container allocated on the heap**/
+  T *_dynamic_vector = nullptr;  /**dynamic container allocated on the heap**/
   Mode _mode =STACK;               /** enum indicator **/
   size_t _size = 0;                    /** # of T elements the vector8*/
   size_t _capacity = StaticCapacity;   /** current maximum # of T elements
