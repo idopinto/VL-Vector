@@ -338,7 +338,6 @@ class vl_vector {
   virtual bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const
   { return !(rhs == *this); }
 
-  void print() ;
  protected:
   /**----private attributes-----**/
   T _static_vector[StaticCapacity];/**static_container located in stack**/
@@ -420,23 +419,5 @@ void vl_vector<T, StaticCapacity>::switch_to_static_vector (size_t k)
   delete[] _dynamic_vector;
   _dynamic_vector = nullptr;
   _mode = STACK;
-}
-
-
-template<class T, size_t StaticCapacity>
-void vl_vector<T, StaticCapacity>::print ()
-{
-    iterator it = this->begin ();
-    if (_size > StaticCapacity)
-    {std::cout << "Dynamic Vector [";}
-    else
-    {std::cout << "Static Vector [";}
-    while (it != end ())
-    {
-        std::cout << *it << " ";
-        it++;
-    }
-    std::cout << "]" << std::endl;
-    std::cout << "Size: " << _size << " Capacity: " << _capacity << std::endl;
 }
 #endif //_VL_VECTOR_H_
