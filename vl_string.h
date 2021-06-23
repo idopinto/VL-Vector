@@ -125,7 +125,7 @@ class vl_string : public vl_vector<char,StaticCapacity> {
 
 
   /**
-   * implict type conversion to const char*
+   * implicit type conversion to const char*
    * @return
    */
   operator const char*() const {
