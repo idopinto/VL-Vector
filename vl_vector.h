@@ -56,20 +56,14 @@ class vl_vector {
 /**
  * Default Constructor
  */
-  vl_vector ():_dynamic_vector(nullptr)
-  {}
+  vl_vector ():_dynamic_vector(nullptr){}
 
   /**
    * Copy Constructor
    * @param other
    */
   vl_vector (const vl_vector<T, StaticCapacity> &other) :
-  _size(other._size),_capacity(other._capacity)
-  {
-    build_dynamic_vec_if_needed();
-    for (size_t i = 0; i < _size; ++i)
-       data ()[i] = other.data ()[i];
-  }
+  vl_vector(other.begin(),other.end()){}
 
   /**
    * Sequence based Constructor
@@ -84,7 +78,7 @@ class vl_vector {
   /**
    * Single-Value initialized Constructor
    * @param count
-   * @param v
+   * @param v ido pinto
    */
   vl_vector (size_t count, const T &v) :
   _size(count),_capacity(cap_c(0,count))
@@ -193,7 +187,7 @@ class vl_vector {
    * @return iterator which points the to new element v
    * (if const_iterator given, returns const_iterator)
    */
-  virtual iterator insert (const_iterator pos, const T &v)
+  iterator insert (const_iterator pos, const T &v)
   {return insert(pos,(const_iterator)&v,(const_iterator)&v+1);}
 
   /**
@@ -281,14 +275,12 @@ class vl_vector {
   {
     if (this != &other)
       {
-        // de-allocates old allocations
         if (_mode == HEAP)
           {
             delete[] _dynamic_vector;
             _dynamic_vector = nullptr;
           }
         _size = other._size;
-//        _size = other.size();
         _capacity = other.capacity ();
         _mode = STACK;
         build_dynamic_vec_if_needed();
@@ -336,7 +328,7 @@ class vl_vector {
    * @return
    */
   virtual bool operator!= (const vl_vector<T, StaticCapacity> &rhs) const
-  { return !(rhs == *this); }
+  {return !this->operator==(rhs);}
 
  protected:
   /**----private attributes-----**/
